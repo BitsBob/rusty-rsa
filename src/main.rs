@@ -1,18 +1,13 @@
 use miller_rabin::is_prime;
 use rand::Rng;
+use num_primes::Generator;
 //https://en.wikipedia.org/wiki/RSA_(cryptosystem)
 
 fn main() {
     let n: u64 = 0x7FFF_FFFF;
     println!("{:?}", is_prime(&n, 20));
-}
-
-//This is temporary for testing, will replace with actuall large prime
-//generator soon.
-pub fn gen_mersenne_prime() -> u64 {
-    let num = rand::thread_rng().gen_range(10, 101);
-    let prime = 2^num - 1;
-    prime
+    let l = Generator::new_prime(512);
+    println!("{}, {}", l, is_prime(&l, 16));
 }
 
 fn gcd(mut a:u32, mut b:u32) -> u32 {
@@ -30,10 +25,13 @@ fn lcm(a:u32, b:u32) -> u32 {
 }
 
 pub fn gen_key() {
-    let p = gen_mersenne_prime();
-    let q = gen_mersenne_prime();
-    let n = p * q;
+    let p = Generator::new_prime(512);
+  let q = Generator::new_prime(512);
+    let _n = p * q;
     let lam_n = lcm((p - 1).try_into().unwrap(), (q - 1).try_into().unwrap());
-    let e = rand::thread_rng().gen_range(1, lam_n + 1);
-    let d:u32;
+    let mut e = rand::thread_rng().gen_range(1, lam_n + 1); //gcd(e, lam_n) == 1
+    while gcd(e, lam_n) != 1 {
+        e = rand::thread_rng().gen_range(1, lam_n + 1);
+    }
+    let _d:u32;
 }
